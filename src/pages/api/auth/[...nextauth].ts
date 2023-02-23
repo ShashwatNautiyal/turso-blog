@@ -1,4 +1,5 @@
 import axiosInstance from "@/axios";
+import { connect } from "@libsql/client";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -22,6 +23,35 @@ export const authOptions: NextAuthOptions = {
 		// ...add more providers here
 	],
 	callbacks: {
+		async signIn(user) {
+			const session = user as any;
+			try {
+				const config = {
+					url: process.env.NEXT_PUBLIC_DB_URL as string,
+				};
+				const db = connect(config);
+
+				const user = await db.execute("SELECT * FROM users WHERE id = ?", [session.user.id]);
+
+				if (user.rows?.length === 0) {
+					const user = await db.execute(
+						"INSERT INTO users (id, name, email, profileImage) VALUES (?, ?, ?, ?)",
+						[session.user.id.toString(), session.user.name, session.user.email, session.user.image]
+					);
+
+					if (user.error) {
+						return false;
+					}
+
+					return true;
+				}
+
+				return true;
+			} catch (error: any) {
+				console.log(error.message);
+				return false;
+			}
+		},
 		async jwt(data) {
 			// Persist the OAuth access_token to the token right after signin
 
