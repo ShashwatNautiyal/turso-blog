@@ -48,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 	}
 
 	await axiosInstance.get(
-		`/revalidate?path=/blogs&secret=` + process.env.NEXT_PUBLIC_REVALIDATE_TOKEN
+		`api/revalidate?path=/&secret=` + process.env.NEXT_PUBLIC_REVALIDATE_TOKEN
 	);
 
 	res.status(201).json({
