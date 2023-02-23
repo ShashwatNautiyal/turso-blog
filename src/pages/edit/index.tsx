@@ -54,8 +54,10 @@ const EditPage = () => {
 			};
 
 			await axiosInstance.post("api/blogs/add", data);
-			setIsLoading(false);
-			router.push("/");
+			setTimeout(() => {
+				setIsLoading(false);
+				router.push("/");
+			}, 500);
 		} catch (error) {
 			toast.error("Unable to publish blog");
 			console.log(error);
