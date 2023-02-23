@@ -34,6 +34,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 		return;
 	}
 
+	await axiosInstance.post("api/user", session);
+
 	const blog = await db.execute(
 		"INSERT INTO blogs (title, description, tags, image, content, user_id) VALUES (?, ?, ?, ?, ?, ?)",
 		[title, description, tags, image, content, session.user.id]

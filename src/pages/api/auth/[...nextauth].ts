@@ -34,12 +34,8 @@ export const authOptions: NextAuthOptions = {
 		async session({ session, token }) {
 			// Send properties to the client, like an access_token from a provider.
 			(session as any).user = token.user;
-			try {
-				await axiosInstance.post("api/user", session);
-			} catch (error) {
-			} finally {
-				return session;
-			}
+
+			return session;
 		},
 	},
 };
