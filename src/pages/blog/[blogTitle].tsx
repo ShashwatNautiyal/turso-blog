@@ -164,7 +164,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 			mdxSource,
 			showHeader: false,
 			asPath: `blog/${blogData.title.split(" ").join("-")}-${blogData.id}`,
-			headings: formatedHeadings,
+			headings: formatedHeadings ?? [],
 			...rest,
 		},
 	};

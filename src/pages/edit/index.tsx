@@ -12,6 +12,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import axiosInstance from "@/axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { slug } from "github-slugger";
 
 const EditPage = () => {
 	const router = useRouter();
@@ -53,11 +54,11 @@ const EditPage = () => {
 				tags: tags.join(","),
 			};
 
-			await axiosInstance.post("api/blogs/add", data);
-			setTimeout(() => {
-				setIsLoading(false);
-				router.push("/");
-			}, 500);
+			const { data: blogData } = await axiosInstance.post("api/blogs/add", data);
+			toast.success("Blog published successfully");
+
+			console.log(blogData);
+			router.push(`/blog/${slug(title)}-${blogData.data.id}`);
 		} catch (error) {
 			toast.error("Unable to publish blog");
 			console.log(error);

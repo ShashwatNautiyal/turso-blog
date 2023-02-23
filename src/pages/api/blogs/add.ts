@@ -7,6 +7,7 @@ import { connect } from "@libsql/client";
 import { authOptions } from "../auth/[...nextauth]";
 
 import axiosInstance from "@/axios";
+import { serializeData } from "../user";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
 	const session = (await getServerSession(req, res, authOptions)) as any;
@@ -39,7 +40,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 		[title, description, tags, image, content, session.user.id]
 	);
 
-	if (blog.error) {
+	const blogResult = await db.execute(
+		`
+            select id from blogs where user_id=? order by id desc limit 1
+        `,
+		[session.user.id]
+	);
+
+	const result = serializeData(blogResult);
+
+	if (blog.error || !result) {
 		res.status(500).json({
 			message: blog.error,
 		});
@@ -51,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 	);
 
 	res.status(201).json({
-		message: "success",
+		data: result[0],
 	});
 
 	return;
