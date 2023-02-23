@@ -13,7 +13,7 @@ import Layout from "@/components/Layout";
 import { Blog } from "@/index";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import axiosInstance from "@/axios";
+
 import { serializeData } from "../api/user";
 import { connect } from "@libsql/client";
 
@@ -159,7 +159,15 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 		text: heading,
 	}));
 
-	return { props: { mdxSource, showHeader: false, headings: formatedHeadings, ...rest } };
+	return {
+		props: {
+			mdxSource,
+			showHeader: false,
+			asPath: `blog/${blogData.title.split(" ").join("-")}-${blogData.id}`,
+			headings: formatedHeadings,
+			...rest,
+		},
+	};
 };
 
 export default BlogPage;
