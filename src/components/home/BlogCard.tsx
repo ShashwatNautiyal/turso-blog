@@ -7,10 +7,13 @@ import { MdArrowUpward } from "react-icons/md";
 
 import { Blog } from "@/index";
 
+import GithubSlugger from "github-slugger";
+
 const BlogCard = (props: Blog) => {
+	const slugger = new GithubSlugger();
 	const { title, description, created_at, image, tags, name, id } = props;
 	return (
-		<Link href={`/blog/${title}-${id}`} className="mt-8">
+		<Link href={`/blog/${slugger.slug(title)}-${id}`} className="mt-8">
 			<div className="w-full h-[240px] relative">
 				<Image
 					sizes="100%"

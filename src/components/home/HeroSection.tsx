@@ -7,12 +7,11 @@ import { BsDot } from "react-icons/bs";
 import { Blog } from "@/index";
 
 import Pill from "../Pill";
+import GithubSlugger from "github-slugger";
 
 const HeroSection = (props: Omit<Blog, "content" | "email" | "user_id">) => {
 	const { title, description, created_at, image, tags, name, id } = props;
-
-	const formatedTitle = title.replace(/ /g, "-").toLowerCase();
-
+	const slugger = new GithubSlugger();
 	return (
 		<div>
 			<div className={`text-center flex flex-col gap-6 h-[30vh] justify-center`}>
@@ -23,7 +22,7 @@ const HeroSection = (props: Omit<Blog, "content" | "email" | "user_id">) => {
 				<div className="">The latest industry news, technologies, and resources</div>
 			</div>
 
-			<Link href={`/blog/${formatedTitle}-${id}`}>
+			<Link href={`/blog/${slugger.slug(title)}-${id}`}>
 				<div className="w-full h-[65vh] relative">
 					<Image
 						sizes="100%"

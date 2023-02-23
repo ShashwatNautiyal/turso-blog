@@ -5,8 +5,7 @@ import { getServerSession } from "next-auth";
 import { connect } from "@libsql/client";
 
 import { authOptions } from "../auth/[...nextauth]";
-import { serializeData } from "../user";
-import axios from "axios";
+
 import axiosInstance from "@/axios";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
