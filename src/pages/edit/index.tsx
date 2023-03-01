@@ -1,18 +1,13 @@
 import React, { useState } from "react";
 
-import axios from "axios";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 
 import EditorSection from "@/components/edit/EditorSection";
 import InfoSection from "@/components/InfoSection";
 
-import { authOptions } from "../api/auth/[...nextauth]";
-import axiosInstance from "@/axios";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { slug } from "github-slugger";
 
 const EditPage = () => {
 	const router = useRouter();
@@ -26,68 +21,11 @@ const EditPage = () => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handlePublish = async () => {
-		setIsLoading(true);
-		if (!image || !title || !description || !mdx || tags.length === 0 || tags[0] === "") {
-			toast.error("Please fill all the fields");
-			setIsLoading(false);
-			return;
-		}
-
-		const isTagsValid = tags.every((tag) => tag.search(",") === -1);
-
-		if (!isTagsValid) {
-			toast.error("Tags cannot contain commas (,)");
-			setIsLoading(false);
-			return;
-		}
-
-		let url: any;
-
-		try {
-			url = await uploadImage(image);
-
-			const data = {
-				title,
-				description,
-				content: mdx,
-				image: url.secure_url,
-				tags: tags.join(","),
-			};
-
-			const { data: blogData } = await axiosInstance.post("api/blogs/add", data);
-			toast.success("Blog published successfully");
-
-			console.log(blogData);
-			router.push(`/blog/${slug(title)}-${blogData.data.id}`);
-		} catch (error) {
-			toast.error("Unable to publish blog");
-			console.log(error);
-		} finally {
-			setIsLoading(false);
-		}
+		// ...
 	};
 
 	const uploadImage = async (image: File) => {
-		const formData = new FormData();
-		formData.append("file", image);
-		formData.append("upload_preset", "shashwat-cloudinary");
-		formData.append("folder", "turso-blog");
-
-		try {
-			const res = await axios.post(
-				"https://api.cloudinary.com/v1_1/dkz7lhlzv/image/upload",
-				formData,
-				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-				}
-			);
-
-			return res.data;
-		} catch (error) {
-			return error;
-		}
+		// ...
 	};
 
 	const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,17 +68,6 @@ const EditPage = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (!session) {
-		return {
-			redirect: {
-				destination: "/",
-				permanent: false,
-			},
-		};
-	}
-
 	return {
 		props: {
 			showHeader: false,

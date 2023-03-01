@@ -10,12 +10,8 @@ import GithubSlugger from "github-slugger";
 
 import InfoSection from "@/components/InfoSection";
 import Layout from "@/components/Layout";
-import { Blog } from "@/index";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-
-import { serializeData } from "../api/user";
-import { connect } from "@libsql/client";
 
 const MDXEmbedProvider = dynamic(() => import("mdx-embed").then((mod) => mod.MDXEmbedProvider), {
 	ssr: false,
@@ -73,66 +69,28 @@ const BlogPage = ({
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const config = {
-		url: process.env.NEXT_PUBLIC_DB_URL as string,
-	};
-
-	const db = connect(config);
-
-	const blogs = await db.execute(
-		`select * from users INNER JOIN blogs where users.id=blogs.user_id`
-	);
-	const _result = serializeData(blogs);
-
-	const result = _result?.map((blog: any) => {
-		return {
-			...blog,
-			tags: blog.tags.split(","),
-		};
-	}) as Blog[];
-
-	const paths = result.map((blog) => ({
-		params: {
-			blogTitle: `${blog.title.split(" ").join("-")}-${blog.id}`,
-		},
-	}));
-
-	return {
-		paths,
-		fallback: true,
-	};
+	return { paths: [], fallback: "blocking" };
 };
 
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 	// MDX text - can be from a local file, database, anywhere
 
-	const id = (params?.blogTitle as string).split("-").pop();
-
-	const slugger = new GithubSlugger();
-
-	const config = {
-		url: process.env.NEXT_PUBLIC_DB_URL as string,
+	const blogData = {
+		content: "## Hello World",
+		created_at: "2021-08-01T00:00:00.000Z",
+		description: "This is a description",
+		id: "1",
+		name: "John Doe",
+		profileImage: "https://avatars.githubusercontent.com/u/51149960?v=4",
+		tags: ["react", "nextjs", "tailwindcss"],
+		title: "Hello World",
+		user_id: 1,
+		email: "abc@gmail.com",
+		image:
+			"https://res.cloudinary.com/dkz7lhlzv/image/upload/v1677106962/turso-blog/n7ym9fzbsnuvkoftyvyd.png",
 	};
 
-	const db = connect(config);
-
-	const blog = await db.execute(
-		`
-            select * from users INNER JOIN blogs where users.id=blogs.user_id AND blogs.id=?
-        `,
-		[id as string]
-	);
-
-	const _result = serializeData(blog);
-
-	const result = _result?.map((blog: any) => {
-		return {
-			...blog,
-			tags: blog.tags.split(","),
-		};
-	});
-
-	const blogData = result[0];
+	const slugger = new GithubSlugger();
 
 	const { content: _content, ...rest } = blogData;
 

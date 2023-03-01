@@ -187,22 +187,6 @@ const SignInModal = ({
 						<FaGithub className="h-5 w-5" />
 						Login with Github
 					</Button>
-
-					{/* <Button
-						className="flex items-center shadow-sm justify-center gap-2 border-black border hover:text-white hover:bg-black transition-all duration-300"
-						onClick={() => signIn("facebook")}
-					>
-						<FaFacebook className="h-5 w-5 text-blue-700" />
-						Login with Facebook
-					</Button> */}
-
-					{/* <Button
-						className="flex items-center shadow-sm justify-center gap-2 border-black border hover:text-white hover:bg-black transition-all duration-300"
-						onClick={() => signIn("facebook")}
-					>
-						<FaTwitter className="h-5 w-5 text-blue-400" />
-						Login with Twitter
-					</Button> */}
 				</div>
 			</Dialog.Panel>
 		</Modal>

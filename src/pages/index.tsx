@@ -2,8 +2,6 @@ import BlogCard from "@/components/home/BlogCard";
 import HeroSection from "@/components/home/HeroSection";
 import Layout from "@/components/Layout";
 import { InferGetServerSidePropsType } from "next";
-import { connect } from "@libsql/client";
-import { serializeData } from "./api/user";
 import { Blog } from "..";
 
 export default function Home({ data }: InferGetServerSidePropsType<typeof getStaticProps>) {
@@ -20,34 +18,24 @@ export default function Home({ data }: InferGetServerSidePropsType<typeof getSta
 }
 
 export const getStaticProps = async () => {
-	try {
-		const config = {
-			url: process.env.NEXT_PUBLIC_DB_URL as string,
-		};
-
-		const db = connect(config);
-
-		const blogs = await db.execute(
-			`select * from users INNER JOIN blogs where users.id=blogs.user_id`
-		);
-		const _result = serializeData(blogs);
-
-		const result = _result?.map((blog: any) => {
-			return {
-				...blog,
-				tags: blog.tags.split(","),
-			};
-		}) as Blog[];
-		return {
-			props: {
-				data: result,
-			},
-		};
-	} catch (error) {
-		return {
-			props: {
-				data: [],
-			},
-		};
-	}
+	return {
+		props: {
+			data: [
+				{
+					content: "## Hello World",
+					created_at: "2021-08-01T00:00:00.000Z",
+					description: "This is a description",
+					id: "1",
+					name: "John Doe",
+					profileImage: "https://avatars.githubusercontent.com/u/51149960?v=4",
+					tags: ["react", "nextjs", "tailwindcss"],
+					title: "Hello World",
+					user_id: 1,
+					email: "abc@gmail.com",
+					image:
+						"https://res.cloudinary.com/dkz7lhlzv/image/upload/v1677106962/turso-blog/n7ym9fzbsnuvkoftyvyd.png",
+				},
+			],
+		},
+	};
 };
