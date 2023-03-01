@@ -147,7 +147,7 @@ const SignInModal = ({
 	signInModalOpen: boolean;
 	setSignInModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-	const handleSignIn = async (method: "google" | "github") => {
+	const handleSignIn = async (method: "github") => {
 		await signIn(method, {
 			redirect: false,
 		});
@@ -174,14 +174,6 @@ const SignInModal = ({
 				<div className="mt-4 flex flex-col gap-4">
 					<Button
 						className="flex items-center shadow-sm justify-center gap-2 border-black border hover:text-white hover:bg-black transition-all duration-300"
-						onClick={() => handleSignIn("google")}
-					>
-						<FcGoogle className="h-5 w-5" />
-						Login with Google
-					</Button>
-
-					<Button
-						className="flex items-center shadow-sm justify-center gap-2 border-black border hover:text-white hover:bg-black transition-all duration-300"
 						onClick={() => handleSignIn("github")}
 					>
 						<FaGithub className="h-5 w-5" />
@@ -198,10 +190,6 @@ const navLinks = [
 		title: "Home",
 		href: "/",
 	},
-	// {
-	// 	title: "Pricing",
-	// 	href: "/pricing",
-	// },
 ];
 
 export default Header;
