@@ -1,6 +1,8 @@
 import BlogCard from "@/components/home/BlogCard";
 import HeroSection from "@/components/home/HeroSection";
 import Layout from "@/components/Layout";
+import getDB from "@/utils/getDB";
+import getJSON from "@/utils/getJSON";
 import { InferGetServerSidePropsType } from "next";
 import { Blog } from "..";
 
@@ -18,24 +20,32 @@ export default function Home({ data }: InferGetServerSidePropsType<typeof getSta
 }
 
 export const getStaticProps = async () => {
-	return {
-		props: {
-			data: [
-				{
-					content: "## Hello World",
-					created_at: "2021-08-01T00:00:00.000Z",
-					description: "This is a description",
-					id: "1",
-					name: "John Doe",
-					profileImage: "https://avatars.githubusercontent.com/u/51149960?v=4",
-					tags: ["react", "nextjs", "tailwindcss"],
-					title: "Hello World",
-					user_id: 1,
-					email: "abc@gmail.com",
-					image:
-						"https://res.cloudinary.com/dkz7lhlzv/image/upload/v1677106962/turso-blog/n7ym9fzbsnuvkoftyvyd.png",
-				},
-			],
-		},
-	};
+	try {
+		const db = await getDB();
+
+		const blogs = await db.execute(
+			`select * from users INNER JOIN blogs where users.id=blogs.user_id`
+		);
+
+		const _result = getJSON(blogs);
+
+		const result = _result?.map((blog: any) => {
+			return {
+				...blog,
+				tags: blog.tags.split(","),
+			};
+		}) as Blog[] | undefined;
+
+		return {
+			props: {
+				data: result ? result : [],
+			},
+		};
+	} catch (error) {
+		return {
+			props: {
+				data: [],
+			},
+		};
+	}
 };
