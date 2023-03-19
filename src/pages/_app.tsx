@@ -16,11 +16,13 @@ export default function App({
 	pageProps: { session, showHeader = true, ...pageProps },
 }: AppProps) {
 	const { title, description, asPath, image, created_at, tags, name } = pageProps;
+
+	const url = `${process.env.NEXT_PUBLIC_SEO_LINK}/${asPath}`;
 	return (
 		<SessionProvider session={session}>
 			<ArticleJsonLd
 				type="BlogPosting"
-				url={`https://turso-blog.vercel.app/${asPath}`}
+				url={url}
 				title={title ?? "Turso Blog"}
 				images={[image]}
 				datePublished={created_at}
@@ -31,10 +33,10 @@ export default function App({
 			<DefaultSeo
 				title={title ?? "Turso Blog"}
 				description={description ?? "The latest industry news, technologies, and resources"}
-				canonical={`https://turso-blog.vercel.app/${asPath}`}
+				canonical={url}
 				openGraph={{
 					locale: "en_IE",
-					url: "https://turso-blog.vercel.app/",
+					url: process.env.NEXT_PUBLIC_SEO_LINK,
 					siteName: "Turso Blog",
 					type: "article",
 					article: {
@@ -53,7 +55,7 @@ export default function App({
 				}}
 				twitter={{
 					handle: "@shashwatnauti",
-					site: "@https://turso-blog.vercel.app/",
+					site: `${process.env.NEXT_PUBLIC_SEO_LINK}`,
 					cardType: "summary_large_image",
 				}}
 				robotsProps={{

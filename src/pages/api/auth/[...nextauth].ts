@@ -1,5 +1,4 @@
-import axiosInstance from "@/axios";
-import { connect } from "@libsql/client";
+import getDB from "@/utils/getDB";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -14,22 +13,16 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: process.env.GOOGLE_SECRET,
 		}),
 		GitHubProvider({
-			// @ts-ignore
-			clientId: process.env.GITHUB_ID,
-			// @ts-ignore
-			clientSecret: process.env.GITHUB_SECRET,
+			clientId: process.env.GITHUB_ID as string,
+			clientSecret: process.env.GITHUB_SECRET as string,
 		}),
-
 		// ...add more providers here
 	],
 	callbacks: {
 		async signIn(user) {
 			const session = user as any;
 			try {
-				const config = {
-					url: process.env.NEXT_PUBLIC_DB_URL as string,
-				};
-				const db = connect(config);
+				const db = await getDB();
 
 				const user = await db.execute("SELECT * FROM users WHERE id = ?", [session.user.id]);
 
@@ -54,7 +47,6 @@ export const authOptions: NextAuthOptions = {
 		},
 		async jwt(data) {
 			// Persist the OAuth access_token to the token right after signin
-
 			const { token, account, user } = data;
 			if (account) {
 				token.user = user;
@@ -64,7 +56,6 @@ export const authOptions: NextAuthOptions = {
 		async session({ session, token }) {
 			// Send properties to the client, like an access_token from a provider.
 			(session as any).user = token.user;
-
 			return session;
 		},
 	},

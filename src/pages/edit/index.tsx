@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 
-import axios from "axios";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 
 import EditorSection from "@/components/edit/EditorSection";
 import InfoSection from "@/components/InfoSection";
 
-import { authOptions } from "../api/auth/[...nextauth]";
-import axiosInstance from "@/axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import axiosInstance from "@/axios";
 import { slug } from "github-slugger";
 
 const EditPage = () => {
@@ -70,12 +68,12 @@ const EditPage = () => {
 	const uploadImage = async (image: File) => {
 		const formData = new FormData();
 		formData.append("file", image);
-		formData.append("upload_preset", "shashwat-cloudinary");
-		formData.append("folder", "turso-blog");
+		formData.append("upload_preset", process.env.NEXT_PUBLIC_UPLOAD_PRESET_NAME as string);
+		formData.append("folder", "turso-blog-demo");
 
 		try {
 			const res = await axios.post(
-				"https://api.cloudinary.com/v1_1/dkz7lhlzv/image/upload",
+				`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload`,
 				formData,
 				{
 					headers: {
@@ -130,17 +128,6 @@ const EditPage = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (!session) {
-		return {
-			redirect: {
-				destination: "/",
-				permanent: false,
-			},
-		};
-	}
-
 	return {
 		props: {
 			showHeader: false,

@@ -10,12 +10,11 @@ import GithubSlugger from "github-slugger";
 
 import InfoSection from "@/components/InfoSection";
 import Layout from "@/components/Layout";
-import { Blog } from "@/index";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-
-import { serializeData } from "../api/user";
-import { connect } from "@libsql/client";
+import getDB from "@/utils/getDB";
+import getJSON from "@/utils/getJSON";
+import { Blog } from "@/index";
 
 const MDXEmbedProvider = dynamic(() => import("mdx-embed").then((mod) => mod.MDXEmbedProvider), {
 	ssr: false,
@@ -73,16 +72,12 @@ const BlogPage = ({
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const config = {
-		url: process.env.NEXT_PUBLIC_DB_URL as string,
-	};
-
-	const db = connect(config);
+	const db = await getDB();
 
 	const blogs = await db.execute(
 		`select * from users INNER JOIN blogs where users.id=blogs.user_id`
 	);
-	const _result = serializeData(blogs);
+	const _result = getJSON(blogs);
 
 	const result = _result?.map((blog: any) => {
 		return {
@@ -99,7 +94,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 	return {
 		paths,
-		fallback: true,
+		fallback: "blocking",
 	};
 };
 
@@ -108,13 +103,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 
 	const id = (params?.blogTitle as string).split("-").pop();
 
-	const slugger = new GithubSlugger();
-
-	const config = {
-		url: process.env.NEXT_PUBLIC_DB_URL as string,
-	};
-
-	const db = connect(config);
+	const db = await getDB();
 
 	const blog = await db.execute(
 		`
@@ -123,7 +112,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 		[id as string]
 	);
 
-	const _result = serializeData(blog);
+	const _result = getJSON(blog);
 
 	const result = _result?.map((blog: any) => {
 		return {
@@ -133,6 +122,8 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 	});
 
 	const blogData = result[0];
+
+	const slugger = new GithubSlugger();
 
 	const { content: _content, ...rest } = blogData;
 

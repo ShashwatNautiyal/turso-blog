@@ -1,13 +1,12 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-
-import { connect } from "@libsql/client";
 
 import { authOptions } from "../auth/[...nextauth]";
 
 import axiosInstance from "@/axios";
-import { serializeData } from "../user";
+import getJSON from "@/utils/getJSON";
+import { createClient } from "@libsql/client";
+import getDB from "@/utils/getDB";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
 	const session = (await getServerSession(req, res, authOptions)) as any;
@@ -20,12 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 		return;
 	}
 
-	// Create db connection
-	const config = {
-		url: process.env.NEXT_PUBLIC_DB_URL as string,
-	};
-	const db = connect(config);
-
+	const db = await getDB();
 	const { title, description, tags, image, content } = req.body;
 
 	if (!title || !description || !tags || !image || !content) {
@@ -47,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 		[session.user.id]
 	);
 
-	const result = serializeData(blogResult);
+	const result = getJSON(blogResult);
 
 	if (blog.error || !result) {
 		res.status(500).json({

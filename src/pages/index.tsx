@@ -1,9 +1,9 @@
 import BlogCard from "@/components/home/BlogCard";
 import HeroSection from "@/components/home/HeroSection";
 import Layout from "@/components/Layout";
+import getDB from "@/utils/getDB";
+import getJSON from "@/utils/getJSON";
 import { InferGetServerSidePropsType } from "next";
-import { connect } from "@libsql/client";
-import { serializeData } from "./api/user";
 import { Blog } from "..";
 
 export default function Home({ data }: InferGetServerSidePropsType<typeof getStaticProps>) {
@@ -21,26 +21,24 @@ export default function Home({ data }: InferGetServerSidePropsType<typeof getSta
 
 export const getStaticProps = async () => {
 	try {
-		const config = {
-			url: process.env.NEXT_PUBLIC_DB_URL as string,
-		};
-
-		const db = connect(config);
+		const db = await getDB();
 
 		const blogs = await db.execute(
 			`select * from users INNER JOIN blogs where users.id=blogs.user_id`
 		);
-		const _result = serializeData(blogs);
+
+		const _result = getJSON(blogs);
 
 		const result = _result?.map((blog: any) => {
 			return {
 				...blog,
 				tags: blog.tags.split(","),
 			};
-		}) as Blog[];
+		}) as Blog[] | undefined;
+
 		return {
 			props: {
-				data: result,
+				data: result ? result : [],
 			},
 		};
 	} catch (error) {
