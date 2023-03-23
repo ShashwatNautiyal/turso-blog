@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"@headlessui/react": "^1.7.11",
-		"@libsql/client": "^0.0.7",
+		"@libsql/client": "^0.0.8",
 		"@mdx-js/mdx": "^2.3.0",
 		"@mdx-js/react": "^2.3.0",
 		"@next/font": "13.1.6",
